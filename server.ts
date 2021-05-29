@@ -14,7 +14,6 @@ const app = express();
 app.use(express.json());
 app.use(passport.initialize());
 
-
 app.get('/users', UserCtrl.index);
 app.get(
   '/users/me',
@@ -22,8 +21,6 @@ app.get(
   UserCtrl.getUserInfo,
 );
 app.get('/users/:id', UserCtrl.show);
-
-
 
 app.get('/tweets', TweetsCtrl.index);
 app.get('/tweets/:id', TweetsCtrl.show);
@@ -34,7 +31,12 @@ app.post(
   createTweetValidations,
   TweetsCtrl.create,
 );
-
+app.patch(
+  '/tweets/:id',
+  passport.authenticate('jwt'),
+  createTweetValidations,
+  TweetsCtrl.update,
+);
 
 app.post('/auth/register', registerValidations, UserCtrl.create);
 app.get('/auth/verify', registerValidations, UserCtrl.verify);
