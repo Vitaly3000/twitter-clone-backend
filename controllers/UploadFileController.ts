@@ -13,7 +13,12 @@ class UploadFileController {
             message: error || 'upload error',
           });
         }
-        res.status(201).send(result);
+        res.status(201).json({
+          url: result.url,
+          size: Math.ceil(result.bytes / 1024),
+          height: result.height,
+          width: result.width,
+        });
       })
       .end(file.buffer);
   }
