@@ -34,7 +34,7 @@ class UserController {
         res.status(400).send();
         return;
       }
-      const user = await UserModel.findById(userId).exec();
+      const user = await UserModel.findById(userId).populate('tweets').exec();
 
       if (!user) {
         res.status(404).send();
@@ -107,7 +107,17 @@ class UserController {
       if (user) {
         user.confirmed = true;
         user.save();
-        res.json({ status: 'success' });
+        res.json({
+          status: 'success',
+          data: {
+            ...user.toJSON(),
+            token: jwt.sign(
+              { data: user.toJSON() },
+              process.env.SECRET_KEY || 'qwerty123',
+              { expiresIn: '30 days' },
+            ),
+          },
+        });
       } else {
         res
           .status(404)

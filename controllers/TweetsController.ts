@@ -50,7 +50,35 @@ class TweetsController {
       });
     }
   }
-
+  async getUserTweets(
+    req: express.Request,
+    res: express.Response,
+  ): Promise<void> {
+    try {
+      const userId = req.params.id;
+      if (!isValidObjectId(userId)) {
+        res.status(400).send();
+        return;
+      }
+      //@ts-ignore
+      const tweet = await TweetModel.find({ user: userId })
+        .populate('user')
+        .exec();
+      if (!tweet) {
+        res.status(404).send();
+        return;
+      }
+      res.json({
+        status: 'success',
+        data: tweet,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error,
+      });
+    }
+  }
   async create(req: express.Request, res: express.Response): Promise<void> {
     try {
       const user = req.user as UserModelDocumentInterface;
@@ -67,6 +95,9 @@ class TweetsController {
           images: req.body.images,
         };
         const tweet = await TweetModel.create(data);
+
+        user.tweets.push(tweet._id);
+
         res.json({
           status: 'success',
           data: await tweet.populate('user').execPopulate(),

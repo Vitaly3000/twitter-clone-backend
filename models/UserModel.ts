@@ -10,6 +10,7 @@ export interface UserModelInterface {
   about?: string;
   website?: string;
   location?: string;
+  tweets?: string[];
 }
 export type UserModelDocumentInterface = UserModelInterface & Document;
 const UserSchema = new Schema<UserModelDocumentInterface>(
@@ -43,7 +44,9 @@ const UserSchema = new Schema<UserModelDocumentInterface>(
     about: String,
     website: String,
     location: String,
+    tweets: [{ type: Schema.Types.ObjectId, ref: 'Tweet' }],
   },
+
   {
     timestamps: true,
   },

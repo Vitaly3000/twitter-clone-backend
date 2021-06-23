@@ -29,6 +29,7 @@ app.get('/users/:id', UserCtrl.show);
 
 app.get('/tweets', TweetsCtrl.index);
 app.get('/tweets/:id', TweetsCtrl.show);
+app.get('/tweets/user/:id', TweetsCtrl.getUserTweets);
 app.delete('/tweets/:id', passport.authenticate('jwt'), TweetsCtrl.delete);
 app.post(
   '/tweets',
