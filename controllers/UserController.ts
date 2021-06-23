@@ -58,13 +58,14 @@ class UserController {
         res.status(400).json({ status: 'error', errors: errors.array() });
         return;
       }
+      const randomStr = Math.random().toString();
       const data: UserModelInterface = {
         email: req.body.email,
         password: generateMD5(req.body.password + process.env.SECRET_KEY),
         username: req.body.username,
         fullname: req.body.fullname,
         confirmHash: generateMD5(
-          process.env.SECRET_KEY || Math.random().toString(),
+          process.env.SECRET_KEY + randomStr || randomStr,
         ),
       };
       const user = await UserModel.create(data);
@@ -73,9 +74,7 @@ class UserController {
           emailFrom: 'admin@twitter.com',
           emailTo: data.email,
           subject: 'Потверждение почты Twitter clone',
-          html: `Для того, чтобы потвердить почту, перейдите <a href='http://localhost:${
-            process.env.PORT || 8888
-          }/auth/verify?hash=${data.confirmHash}'>по этой ссылке</a>`,
+          html: `Для того, чтобы потвердить почту, перейдите <a href='http://localhost:3000/user/activate/${data.confirmHash}'>по этой ссылке</a>`,
         },
         (error: Error | null) => {
           if (error) {
